@@ -1,0 +1,24 @@
+plugins {
+	id 'org.springframework.boot' version '2.7.2'
+	id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+	id 'java'
+}
+
+group = 'prodtalk'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        implementation 'org.hibernate:hibernate-core:5.5.7.Final'
+        implementation 'com.oracle.database.jdbc:ojdbc8:21.1.0.0'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
