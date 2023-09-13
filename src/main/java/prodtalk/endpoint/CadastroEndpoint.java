@@ -33,7 +33,7 @@ public class CadastroEndpoint {
     }
 
     @PutMapping("/cadastro")
-    public ResponseEntity<Response> updateBook(@RequestBody Cadastro cadastro) {
+    public ResponseEntity<Response> updateCadastro(@RequestBody Cadastro cadastro) {
         try {
             return cadastroRepository.salvarCadastro(cadastro);
         } catch (SQLException e) {

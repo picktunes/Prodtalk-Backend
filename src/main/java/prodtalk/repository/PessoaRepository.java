@@ -20,7 +20,7 @@ public class PessoaRepository extends GenericRepository {
         try {
             connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
-            String sql = " select ID_PESSOA, DS_NOME_COMPLETO, DS_SEXO, NR_IDADE, DS_PROFISSAO, DS_BIOGRAFIA, DS_INTERESSES "
+            String sql = " select ID_PESSOA, DS_NOME_COMPLETO, DS_SEXO, NR_IDADE, DS_PROFISSAO, DS_BIOGRAFIA, DS_INTERESSES, IMG "
                     + " from pessoa "
                     + " where nr_seq_cadastro = ? ";
             statement = connection.prepareStatement(sql);
@@ -35,7 +35,7 @@ public class PessoaRepository extends GenericRepository {
                         resultSet.getString("DS_SEXO"),
                         resultSet.getInt("NR_IDADE"),
                         resultSet.getString("DS_PROFISSAO"),
-                        //resultSet.getBlob("BLB_FOTO_PERFIL"),
+                        resultSet.getBlob("IMG"),
                         resultSet.getString("DS_BIOGRAFIA"),
                         resultSet.getString("DS_INTERESSES"));
                 return pessoa;
