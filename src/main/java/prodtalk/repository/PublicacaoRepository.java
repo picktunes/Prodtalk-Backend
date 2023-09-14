@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+import prodtalk.entity.Pessoa;
 import prodtalk.entity.Publicacao;
 import utils.http.Response;
 
@@ -29,7 +30,10 @@ public class PublicacaoRepository extends GenericRepository {
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
+                Pessoa pessoa = instanciarPessoa(resultSet);
+                
                 Publicacao publicacao = new Publicacao(
+                        pessoa,
                         resultSet.getInt("ID_PUBLICACAO"),
                         resultSet.getInt("ID_PESSOA"),
                         resultSet.getDate("DT_CRIACAO"),
@@ -74,6 +78,11 @@ public class PublicacaoRepository extends GenericRepository {
                 connection.close();
             }
         }
+    }
+    
+    private Pessoa instanciarPessoa(ResultSet resultSet) throws SQLException{
+        PessoaRepository p = new PessoaRepository();
+        return p.getPessoaId(resultSet.getInt("ID_PESSOA"));
     }
 
 

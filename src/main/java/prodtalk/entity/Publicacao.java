@@ -1,11 +1,11 @@
 package prodtalk.entity;
 
-import java.sql.Blob;
 import java.util.Date;
 
 public class Publicacao {
 
     private int idPublicacao;
+    private Pessoa pessoa;
     private int idPessoa;
     private Date dataCriacao;
     private Date dataAtualizacao;
@@ -14,10 +14,8 @@ public class Publicacao {
     private int quantidadeLikes;
     private String img;
 
-    public Publicacao() {
-    }
-
-    public Publicacao(int idPublicacao, int idPessoa, Date dataCriacao, Date dataAtualizacao, String conteudo, String titulo, int quantidadeLikes, String img) {
+    public Publicacao(Pessoa pessoa, int idPublicacao, int idPessoa, Date dataCriacao, Date dataAtualizacao, String conteudo, String titulo, int quantidadeLikes, String img) {
+        this.pessoa = pessoa;
         this.idPublicacao = idPublicacao;
         this.idPessoa = idPessoa;
         this.dataCriacao = dataCriacao;
@@ -90,5 +88,13 @@ public class Publicacao {
 
     public void setImg(String img) {
         this.img = img;
+    }
+    
+    public Pessoa getPessoa() {
+        return pessoa;
+    }
+
+    public void setPessoa(Pessoa pessoa) {
+        this.pessoa = pessoa;
     }
 }
