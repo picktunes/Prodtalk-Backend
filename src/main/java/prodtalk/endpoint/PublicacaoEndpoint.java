@@ -28,7 +28,7 @@ public class PublicacaoEndpoint {
     @GetMapping
     public List<Publicacao> buscarPublicacoes(@RequestParam(defaultValue = "1") int page) throws Exception {
         int pageSize = 10; // Número de publicações por página
-        int offset = (page - 1) * pageSize;
+        int offset = page * 10;
         List<Publicacao> publicacoes = publicacaoRepository.buscarPublicacoesSelecionadas(offset, pageSize);
         return publicacoes;
     }
