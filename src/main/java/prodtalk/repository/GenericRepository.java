@@ -9,6 +9,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import prodtalk.entity.Comentario;
+import prodtalk.entity.ComentarioHierarquico;
 import prodtalk.entity.Pessoa;
 import prodtalk.entity.PublicacaoCurtida;
 import utils.http.BancoDadosConfig;
@@ -98,5 +101,9 @@ public class GenericRepository {
         return p.buscarPublicacaoCurtidaPorPublicacao(resultSet.getLong("ID_PUBLICACAO"));
     }
 
+    protected List<Map<String, Object>> instanciarComentarios(ResultSet resultSet) throws SQLException, Exception {
+        ComentarioRepository c = new ComentarioRepository();
+        return c.buscarComentariosPorPublicacao(resultSet.getLong("ID_PUBLICACAO"));
+    }
 
 }

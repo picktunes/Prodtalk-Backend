@@ -7,8 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+import prodtalk.entity.Comentario;
+import prodtalk.entity.ComentarioHierarquico;
 import prodtalk.entity.Pessoa;
 import prodtalk.entity.Publicacao;
 import prodtalk.entity.PublicacaoCurtida;
@@ -41,6 +44,7 @@ public class PublicacaoRepository extends GenericRepository {
             while (resultSet.next()) {
                 Pessoa pessoa = instanciarPessoa(resultSet);
                 List<PublicacaoCurtida> publicacaoCurtida = instanciarPublicacaoCurtidas(resultSet);
+                List<Map<String, Object>> comentarios = instanciarComentarios(resultSet);
 
                 Publicacao publicacao = new Publicacao(
                         pessoa,
@@ -50,9 +54,10 @@ public class PublicacaoRepository extends GenericRepository {
                         resultSet.getDate("DT_ATUALIZACAO"),
                         resultSet.getString("CONTEUDO"),
                         resultSet.getString("DS_TITULO"),
-                        publicacaoCurtida,
-                        blobToString(resultSet.getBlob("IMG"))
-                );
+                        comentarios,
+                        blobToString(resultSet.getBlob("IMG")),
+                        publicacaoCurtida
+                        );
                 publicacoes.add(publicacao);
             }
         } catch (SQLException e) {

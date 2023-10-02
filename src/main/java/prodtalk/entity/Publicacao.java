@@ -2,6 +2,7 @@ package prodtalk.entity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class Publicacao {
 
@@ -14,8 +15,10 @@ public class Publicacao {
     private String conteudo;
     private String titulo;
     private String img;
+    private List<Map<String, Object>> comentarios ; 
 
-    public Publicacao(Pessoa pessoa, long idPublicacao, int idPessoa, Date dataCriacao, Date dataAtualizacao, String conteudo, String titulo, List<PublicacaoCurtida>  publicacaoCurtida, String img) {
+    public Publicacao(Pessoa pessoa, long idPublicacao, int idPessoa, Date dataCriacao, Date dataAtualizacao, String conteudo, 
+            String titulo, List<Map<String, Object>> comentarios, String img, List<PublicacaoCurtida> publicacaoCurtidas) {
         this.pessoa = pessoa;
         this.idPublicacao = idPublicacao;
         this.idPessoa = idPessoa;
@@ -23,8 +26,9 @@ public class Publicacao {
         this.dataAtualizacao = dataAtualizacao;
         this.conteudo = conteudo;
         this.titulo = titulo;
-        this.publicacaoCurtida = publicacaoCurtida;
+        this.comentarios = comentarios; // Inicialize a lista de comentários
         this.img = img;
+        this.publicacaoCurtida = publicacaoCurtidas;
     }
 
     public long getIdPublicacao() {
@@ -97,5 +101,13 @@ public class Publicacao {
 
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
+    }
+    
+    public List<Map<String, Object>> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(List<Map<String, Object>> comentarios) {
+        this.comentarios = comentarios;
     }
 }
