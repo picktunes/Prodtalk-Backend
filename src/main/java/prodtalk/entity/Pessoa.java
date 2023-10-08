@@ -10,7 +10,6 @@ public class Pessoa {
     private String sexo;
     private Integer idade;
     private String profissao;
-    //private Blob fotoPerfil;
     private String biografia;
     private String interesses;
     
