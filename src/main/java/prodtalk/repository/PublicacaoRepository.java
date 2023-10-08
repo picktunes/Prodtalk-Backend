@@ -7,10 +7,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import prodtalk.entity.Pessoa;
 import prodtalk.entity.Publicacao;
+import prodtalk.entity.PublicacaoCurtida;
 import utils.http.Response;
 
 @Repository
@@ -22,16 +24,26 @@ public class PublicacaoRepository extends GenericRepository {
         try {
             Connection connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
-            int offset = (page - 1) * pageSize;
-            String query = "SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (SELECT * FROM publicacao) a WHERE ROWNUM <= ?)";
+            int offset = page;
+            int upperLimit = page - 10;
+
+            String query = "SELECT * FROM ("
+                    + "SELECT a.*, ROWNUM rnum FROM ("
+                    + "SELECT * FROM publicacao ORDER BY id_publicacao DESC"
+                    + ") a WHERE ROWNUM <= ?"
+                    + ") WHERE rnum > ?";
+
             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, pageSize);
-            //statement.setInt(2, offset);
+            statement.setInt(1, offset);
+            statement.setInt(2, upperLimit);
+
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
                 Pessoa pessoa = instanciarPessoa(resultSet);
-                
+                List<PublicacaoCurtida> publicacaoCurtida = instanciarPublicacaoCurtidas(resultSet);
+                List<Map<String, Object>> comentarios = instanciarComentarios(resultSet);
+
                 Publicacao publicacao = new Publicacao(
                         pessoa,
                         resultSet.getInt("ID_PUBLICACAO"),
@@ -40,9 +52,10 @@ public class PublicacaoRepository extends GenericRepository {
                         resultSet.getDate("DT_ATUALIZACAO"),
                         resultSet.getString("CONTEUDO"),
                         resultSet.getString("DS_TITULO"),
-                        resultSet.getInt("QT_LIKES"),
-                        blobToString(resultSet.getBlob("IMG"))
-                );
+                        comentarios,
+                        blobToString(resultSet.getBlob("IMG")),
+                        publicacaoCurtida
+                        );
                 publicacoes.add(publicacao);
             }
         } catch (SQLException e) {
@@ -62,7 +75,7 @@ public class PublicacaoRepository extends GenericRepository {
                     + "VALUES (SEQ_PUBLICACAO.NEXTVAL, SYSDATE, SYSDATE, ?, ?, ?, ?, ?)";
             statement = connection.prepareStatement(sql);
             statement.setString(1, publicacao.getConteudo());
-            statement.setInt(2, publicacao.getQuantidadeLikes());
+            statement.setInt(2, 0);
             statement.setInt(3, 1);
             statement.setString(4, publicacao.getTitulo());
             statement.setBlob(5, stringToBlob(publicacao.getImg(), connection));
@@ -79,11 +92,5 @@ public class PublicacaoRepository extends GenericRepository {
             }
         }
     }
-    
-    private Pessoa instanciarPessoa(ResultSet resultSet) throws SQLException{
-        PessoaRepository p = new PessoaRepository();
-        return p.getPessoaId(resultSet.getInt("ID_PESSOA"));
-    }
-
 
 }

@@ -1,20 +1,24 @@
 package prodtalk.entity;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class Publicacao {
 
-    private int idPublicacao;
+    private long idPublicacao;
     private Pessoa pessoa;
+    private List<PublicacaoCurtida> publicacaoCurtida;
     private int idPessoa;
     private Date dataCriacao;
     private Date dataAtualizacao;
     private String conteudo;
     private String titulo;
-    private int quantidadeLikes;
     private String img;
+    private List<Map<String, Object>> comentarios ; 
 
-    public Publicacao(Pessoa pessoa, int idPublicacao, int idPessoa, Date dataCriacao, Date dataAtualizacao, String conteudo, String titulo, int quantidadeLikes, String img) {
+    public Publicacao(Pessoa pessoa, long idPublicacao, int idPessoa, Date dataCriacao, Date dataAtualizacao, String conteudo, 
+            String titulo, List<Map<String, Object>> comentarios, String img, List<PublicacaoCurtida> publicacaoCurtidas) {
         this.pessoa = pessoa;
         this.idPublicacao = idPublicacao;
         this.idPessoa = idPessoa;
@@ -22,11 +26,12 @@ public class Publicacao {
         this.dataAtualizacao = dataAtualizacao;
         this.conteudo = conteudo;
         this.titulo = titulo;
-        this.quantidadeLikes = quantidadeLikes;
+        this.comentarios = comentarios; // Inicialize a lista de comentários
         this.img = img;
+        this.publicacaoCurtida = publicacaoCurtidas;
     }
 
-    public int getIdPublicacao() {
+    public long getIdPublicacao() {
         return idPublicacao;
     }
 
@@ -58,12 +63,12 @@ public class Publicacao {
         this.conteudo = conteudo;
     }
 
-    public int getQuantidadeLikes() {
-        return quantidadeLikes;
+    public List<PublicacaoCurtida>  getPublicacaoCurtidas() {
+        return publicacaoCurtida;
     }
 
-    public void setQuantidadeLikes(int quantidadeLikes) {
-        this.quantidadeLikes = quantidadeLikes;
+    public void setPublicacaoCurtidas(List<PublicacaoCurtida>  publicacaoCurtidas) {
+        this.publicacaoCurtida = publicacaoCurtidas;
     }
 
     public int getIdPessoa() {
@@ -96,5 +101,13 @@ public class Publicacao {
 
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
+    }
+    
+    public List<Map<String, Object>> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(List<Map<String, Object>> comentarios) {
+        this.comentarios = comentarios;
     }
 }
