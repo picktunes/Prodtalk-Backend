@@ -1,10 +1,11 @@
 package prodtalk.entity;
 
 import java.sql.Timestamp;
+
 public class Comentario {
 
     private Long idComentario;
-    private Long idPessoa;
+    private Pessoa pessoa;
     private Long idPublicacao;
     private Long idComentarioResposta;
     private String conteudo;
@@ -12,6 +13,16 @@ public class Comentario {
     private Timestamp dtCriacaoComent;
     private Integer ieAtivo = 1;
     private Timestamp dtInativo;
+    
+    public Comentario(Long idComentario, Pessoa pessoa, Long idPublicacao, Long idComentarioResposta, String conteudo, Timestamp dtCriacaoComent, Timestamp dtInativo) {
+        this.idComentario = idComentario;
+        this.pessoa = pessoa;
+        this.idPublicacao = idPublicacao;
+        this.idComentarioResposta = idComentarioResposta;
+        this.conteudo = conteudo;
+        this.dtCriacaoComent = dtCriacaoComent;
+        this.dtInativo = dtInativo;
+    }
 
     public Long getIdComentario() {
         return idComentario;
@@ -21,12 +32,12 @@ public class Comentario {
         this.idComentario = idComentario;
     }
 
-    public Long getIdPessoa() {
-        return idPessoa;
+    public Pessoa getPessoa() {
+        return pessoa;
     }
 
-    public void setIdPessoa(Long idPessoa) {
-        this.idPessoa = idPessoa;
+    public void setPessoa(Pessoa pessoa) {
+        this.pessoa = pessoa;
     }
 
     public Long getIdPublicacao() {

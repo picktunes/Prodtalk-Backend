@@ -10,13 +10,14 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import prodtalk.entity.Comentario;
-import prodtalk.entity.ComentarioHierarquico;
 import prodtalk.entity.Pessoa;
 import prodtalk.entity.PublicacaoCurtida;
 import utils.http.BancoDadosConfig;
 import utils.http.BlobUtils;
 
+@CrossOrigin("*")
 public class GenericRepository {
 
     private static GenericRepository instance;

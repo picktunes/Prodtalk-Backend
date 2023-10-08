@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
-import prodtalk.entity.Comentario;
-import prodtalk.entity.ComentarioHierarquico;
 import prodtalk.entity.Pessoa;
 import prodtalk.entity.Publicacao;
 import prodtalk.entity.PublicacaoCurtida;

@@ -10,9 +10,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import prodtalk.entity.Comentario;
 import prodtalk.entity.ComentarioHierarquico;
+import prodtalk.entity.Pessoa;
+import prodtalk.entity.Publicacao;
+import utils.http.Response;
 
 @Repository
 public class ComentarioRepository extends GenericRepository {
@@ -37,7 +41,8 @@ public class ComentarioRepository extends GenericRepository {
                     + "FROM \n"
                     + "    comentario \n"
                     + "WHERE \n"
-                    + "    id_publicacao = ?";
+                    + "    id_publicacao = ?"
+                    + "    order by id_comentario desc";
 
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setLong(1, idPublicacao);
@@ -46,8 +51,9 @@ public class ComentarioRepository extends GenericRepository {
 
             while (resultSet.next()) {
                 Map<String, Object> comentario = new HashMap<>();
+                Pessoa pessoa = instanciarPessoa(resultSet);
                 comentario.put("idComentario", resultSet.getLong("id_comentario"));
-                comentario.put("idPessoa", resultSet.getLong("id_pessoa"));
+                comentario.put("pessoa", pessoa);
                 comentario.put("idPublicacao", resultSet.getLong("id_publicacao"));
                 comentario.put("idComentarioResposta", resultSet.getLong("ID_COMENTARIO_RESPOSTA"));
                 comentario.put("conteudo", resultSet.getString("conteudo"));
@@ -84,6 +90,44 @@ public class ComentarioRepository extends GenericRepository {
         return comentariosHierarquicos;
     }
 
+    public List<Map<String, Object>> salvarComentario(Comentario comentario) throws SQLException, Exception {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        Long comentarioIdResposta = comentario.getIdComentarioResposta();
+
+        try {
+            connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
+
+            String sql = "INSERT INTO COMENTARIO (ID_COMENTARIO, ID_PESSOA, ID_PUBLICACAO, ID_COMENTARIO_RESPOSTA, CONTEUDO, NR_DENUNCIAS, DT_CRIACAO_COMENT, IE_ATIVO, DT_INATIVO)\n"
+                    + "VALUES (SEQ_COMENTARIO.NEXTVAL, ?, ?, ?, ?, ?,  SYSDATE, ?, ?)";
+            statement = connection.prepareStatement(sql);
+            statement.setLong(1, comentario.getPessoa().getIdPessoa());
+            statement.setLong(2, comentario.getIdPublicacao());
+            if (comentarioIdResposta == null) {
+                statement.setNull(3, java.sql.Types.BIGINT); // Define o campo como nulo
+            } else {
+                statement.setLong(3, comentarioIdResposta);
+            }
+            statement.setString(4, comentario.getConteudo());
+            statement.setInt(5, 0);
+            statement.setInt(6, 1);
+            statement.setDate(7, null);
+
+            statement.execute();
+
+            // Após inserir o comentário, obtenha a lista atualizada de comentários hierárquicos
+            return buscarComentariosPorPublicacao(comentario.getIdPublicacao());
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+    }
+
     private ComentarioHierarquico encontrarComentarioHierarquico(List<ComentarioHierarquico> comentariosHierarquicos, Long comentarioId) {
         for (ComentarioHierarquico comentarioHierarquico : comentariosHierarquicos) {
             if (comentarioHierarquico.getComentario().getIdComentario().equals(comentarioId)) {
@@ -98,90 +142,4 @@ public class ComentarioRepository extends GenericRepository {
         return null;
     }
 
-
-    /*
-    public Optional<PublicacaoCurtida> findByPublicacaoAndPessoa(long idPublicacao, long idPessoa) throws Exception {
-        Optional<PublicacaoCurtida> publicacaoCurtidaOptional = Optional.empty();
-
-        try {
-            Connection connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
-
-            String query = "SELECT * FROM publicacao_curtida WHERE ID_PUBLICACAO = ? AND ID_PESSOA = ?";
-
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setLong(1, idPublicacao);
-            statement.setLong(2, idPessoa);
-
-            ResultSet resultSet = statement.executeQuery();
-
-            if (resultSet.next()) {
-                Pessoa pessoa = instanciarPessoa(resultSet);
-                PublicacaoCurtida publicacaoCurtida = new PublicacaoCurtida(
-                        resultSet.getInt("ID_CURTIDA"),
-                        resultSet.getInt("ID_PUBLICACAO"),
-                        pessoa,
-                        resultSet.getDate("DT_CURTIDA")
-                );
-
-                publicacaoCurtidaOptional = Optional.of(publicacaoCurtida);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return publicacaoCurtidaOptional;
-    }
-
-    public List<PublicacaoCurtida> save(long idPublicacao, long idPessoa) throws Exception {
-        Connection connection = null;
-        PreparedStatement statement = null;
-
-        try {
-            connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
-
-            String sql = "INSERT INTO publicacao_curtida (ID_CURTIDA, ID_PUBLICACAO, ID_PESSOA, DT_CURTIDA) VALUES (SEQ_PUBLICACAO_CURTIDA.nextval, ?, ?, sysdate)";
-            statement = connection.prepareStatement(sql);
-            statement.setLong(1, idPublicacao);
-            statement.setLong(2, idPessoa);
-
-            statement.execute();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (statement != null) {
-                statement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
-        }
-        return buscarPublicacaoCurtidaPorPublicacao(idPublicacao);
-    }
-
-    public List<PublicacaoCurtida> delete(long idPublicacao, long idPessoa) throws Exception {
-        Connection connection = null;
-        PreparedStatement statement = null;
-
-        try {
-            connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
-
-            String sql = "DELETE FROM publicacao_curtida WHERE ID_PUBLICACAO = ? and ID_PESSOA = ?";
-            statement = connection.prepareStatement(sql);
-            statement.setLong(1, idPublicacao);
-            statement.setLong(2, idPessoa);
-
-            statement.execute();
-
-        } finally {
-            if (statement != null) {
-                statement.close();
-            }
-            if (connection != null) {
-                connection.close();
-            }
-        }
-        return buscarPublicacaoCurtidaPorPublicacao(idPublicacao);
-    }
-     */
 }

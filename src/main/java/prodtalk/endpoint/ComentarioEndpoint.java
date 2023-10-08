@@ -1,5 +1,6 @@
 package prodtalk.endpoint;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -8,15 +9,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import prodtalk.entity.Comentario;
-import prodtalk.entity.ComentarioHierarquico;
 import prodtalk.repository.ComentarioRepository;
 
 @RestController
 @RequestMapping("/comentario")
 @CrossOrigin("*")
+@JsonIgnoreProperties({"*", "handler"})
 public class ComentarioEndpoint {
 
     private final ComentarioRepository comentarioRepository;
@@ -39,26 +41,17 @@ public class ComentarioEndpoint {
         }
     }
 
-    /*
     @PostMapping
-    public ResponseEntity<?> curtirPublicacao(@RequestBody Map<String, Object> request) {
+    public ResponseEntity<List<Map<String, Object>>> publicarPublicacao(@RequestBody Comentario comentario) {
         try {
-            Long idPublicacao = Long.parseLong(request.get("idPublicacao").toString());
-            Long idPessoa = Long.parseLong(request.get("idPessoa").toString());
-            
-            Optional<PublicacaoCurtida> curtidaExistente = publicacaoCurtidaRepository.findByPublicacaoAndPessoa(
-                    idPublicacao, 
-                    idPessoa
-            );
-
-            if (curtidaExistente.isPresent()) {
-                ;
-                return ResponseEntity.ok().body(publicacaoCurtidaRepository.delete(idPublicacao, idPessoa));
-            } else {
-                return ResponseEntity.ok(publicacaoCurtidaRepository.save( idPublicacao, idPessoa));
+            List<Map<String, Object>> comentariosAtualizados = comentarioRepository.salvarComentario(comentario);
+            if (comentariosAtualizados.isEmpty()) {
+                return ResponseEntity.noContent().build();
             }
+            return ResponseEntity.ok(comentariosAtualizados);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Erro ao curtir/descurtir a publicação. " + e.getMessage());
+            return ResponseEntity.internalServerError().body(null);
         }
-    }*/
+    }
+
 }

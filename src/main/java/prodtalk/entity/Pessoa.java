@@ -1,8 +1,8 @@
 package prodtalk.entity;
 
-import java.sql.Blob;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-
+@JsonInclude
 public class Pessoa {
 
     private Long idPessoa;
@@ -10,17 +10,17 @@ public class Pessoa {
     private String sexo;
     private Integer idade;
     private String profissao;
-    private Blob fotoPerfil;
+    //private Blob fotoPerfil;
     private String biografia;
     private String interesses;
     
-    public Pessoa(Long idPessoa, String nomeCompleto, String sexo, Integer idade, String profissao, Blob img, String biografia, String interesses) {
+    public Pessoa(Long idPessoa, String nomeCompleto, String sexo, Integer idade, String profissao,/* Blob img,*/ String biografia, String interesses) {
         this.idPessoa = idPessoa;
         this.nomeCompleto = nomeCompleto;
         this.sexo = sexo;
         this.idade = idade;
         this.profissao = profissao;
-        this.fotoPerfil = img;
+        //this.fotoPerfil = img;
         this.biografia = biografia;
         this.interesses = interesses;
     }
@@ -57,13 +57,13 @@ public class Pessoa {
         this.profissao = profissao;
     }
 
-    public Blob getImg() {
+    /*public Blob getImg() {
         return fotoPerfil;
     }
 
     public void setImg(Blob img) {
         this.fotoPerfil = img;
-    }
+    }*/
 
     public String getBiografia() {
         return biografia;

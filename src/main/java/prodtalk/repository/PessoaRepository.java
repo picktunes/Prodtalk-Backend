@@ -35,7 +35,7 @@ public class PessoaRepository extends GenericRepository {
                         resultSet.getString("DS_SEXO"),
                         resultSet.getInt("NR_IDADE"),
                         resultSet.getString("DS_PROFISSAO"),
-                        resultSet.getBlob("IMG"),
+                        //resultSet.getBlob("IMG"),
                         resultSet.getString("DS_BIOGRAFIA"),
                         resultSet.getString("DS_INTERESSES"));
                 return pessoa;
@@ -74,7 +74,7 @@ public class PessoaRepository extends GenericRepository {
                         resultSet.getString("DS_SEXO"),
                         resultSet.getInt("NR_IDADE"),
                         resultSet.getString("DS_PROFISSAO"),
-                        resultSet.getBlob("IMG"),
+                        //resultSet.getBlob("IMG"),
                         resultSet.getString("DS_BIOGRAFIA"),
                         resultSet.getString("DS_INTERESSES"));
                 return pessoa;
