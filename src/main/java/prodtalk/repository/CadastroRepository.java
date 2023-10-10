@@ -78,11 +78,62 @@ public class CadastroRepository extends GenericRepository {
         }
     }
 
-    /*public ResponseEntity<Response>  updateCadastro(Cadastro cadastro) throws SQLException {
-        return 0;
+    public ResponseEntity<Response> alterarCadastro(Cadastro cadastro) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
+
+             String sql = "UPDATE cadastro SET DS_EMAIL = ?, DS_LOGIN = ?, DT_ATUALIZACAO = SYSDATE WHERE ID_CADASTRO = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, cadastro.getEmail());
+            statement.setString(2, cadastro.getLogin());
+            statement.setLong(3, cadastro.getIdCadastro());
+
+            int rowsUpdated = statement.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                return Response.ok("Dados atualizados com sucesso!");
+            } else {
+                return Response.invalid("Falha ao atualizar os dados. Cadastro não encontrado.");
+            }
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
     }
 
-    public ResponseEntity<Response>  deleteCadastro(Cadastro cadastro) throws SQLException {
-        return 0;
-    }*/
+    public ResponseEntity<Response> alterarCadastroSenha(Cadastro cadastro) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
+
+            String sql = "UPDATE cadastro SET DS_SENHA = ? WHERE ID_CADASTRO = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, cadastro.getSenha());
+            statement.setLong(2, cadastro.getIdCadastro());
+
+            int rowsUpdated = statement.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                return Response.ok("Senha atualizada com sucesso!");
+            } else {
+                return Response.invalid("Falha ao atualizar a senha. Cadastro não encontrado.");
+            }
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+    }
 }

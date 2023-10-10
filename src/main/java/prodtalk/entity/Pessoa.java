@@ -11,9 +11,8 @@ public class Pessoa {
     private Integer idade;
     private String profissao;
     private String biografia;
-    private String interesses;
     
-    public Pessoa(Long idPessoa, String nomeCompleto, String sexo, Integer idade, String profissao,/* Blob img,*/ String biografia, String interesses) {
+    public Pessoa(Long idPessoa, String nomeCompleto, String sexo, Integer idade, String profissao,/* Blob img,*/ String biografia) {
         this.idPessoa = idPessoa;
         this.nomeCompleto = nomeCompleto;
         this.sexo = sexo;
@@ -21,7 +20,6 @@ public class Pessoa {
         this.profissao = profissao;
         //this.fotoPerfil = img;
         this.biografia = biografia;
-        this.interesses = interesses;
     }
     
     public Long getIdPessoa() {
@@ -70,14 +68,6 @@ public class Pessoa {
 
     public void setBiografia(String biografia) {
         this.biografia = biografia;
-    }
-
-    public String getInteresses() {
-        return interesses;
-    }
-
-    public void setInteresses(String interesses) {
-        this.interesses = interesses;
     }
 
     public String getNomeCompleto() {
