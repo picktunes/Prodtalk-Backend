@@ -55,7 +55,54 @@ public class PublicacaoRepository extends GenericRepository {
                         comentarios,
                         blobToString(resultSet.getBlob("IMG")),
                         publicacaoCurtida
-                        );
+                );
+                publicacoes.add(publicacao);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return publicacoes;
+    }
+
+    public List<Publicacao> buscarPublicacoesPorTexto(String texto, int page, int pageSize) throws Exception {
+        List<Publicacao> publicacoes = new ArrayList<>();
+
+        try {
+            Connection connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
+
+            int offset = page;
+            int upperLimit = page - 10;
+
+            String query = "SELECT * FROM ("
+                    + "SELECT a.*, ROWNUM rnum FROM ("
+                    + "SELECT * FROM publicacao WHERE CONTAINS(CONTEUDO, ?, 1) > 0 ORDER BY id_publicacao DESC"
+                    + ") a WHERE ROWNUM <= ?"
+                    + ") WHERE rnum > ?";
+
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, "%" + texto.toUpperCase() + "%"); // Pesquisa por texto (ignorando maiúsculas/minúsculas)
+            statement.setInt(2, offset);
+            statement.setInt(3, upperLimit);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Pessoa pessoa = instanciarPessoa(resultSet);
+                List<PublicacaoCurtida> publicacaoCurtida = instanciarPublicacaoCurtidas(resultSet);
+                List<Map<String, Object>> comentarios = instanciarComentarios(resultSet);
+
+                Publicacao publicacao = new Publicacao(
+                        pessoa,
+                        resultSet.getInt("ID_PUBLICACAO"),
+                        resultSet.getInt("ID_PESSOA"),
+                        resultSet.getDate("DT_CRIACAO"),
+                        resultSet.getDate("DT_ATUALIZACAO"),
+                        resultSet.getString("CONTEUDO"),
+                        resultSet.getString("DS_TITULO"),
+                        comentarios,
+                        blobToString(resultSet.getBlob("IMG")),
+                        publicacaoCurtida
+                );
                 publicacoes.add(publicacao);
             }
         } catch (SQLException e) {

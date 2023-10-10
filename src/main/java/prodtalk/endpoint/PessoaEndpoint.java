@@ -29,4 +29,13 @@ public class PessoaEndpoint {
     public ResponseEntity<Response> cadastrarPessoa(@RequestBody Pessoa pessoa) {
         return null;
     }
+    
+    @PutMapping("/pessoa")
+    public ResponseEntity<Response>alterarPessoa(@RequestBody Pessoa pessoa) {
+        try {
+            return Response.ok(pessoaRepository.alterarPessoa(pessoa));
+        } catch (SQLException e) {
+            return Response.invalid("Erro ao buscar a pessoa. " + e.getMessage());
+        }
+    }
 }

@@ -10,7 +10,7 @@ import utils.http.Response;
 @RestController
 @CrossOrigin("*")
 public class CadastroEndpoint {
-    
+
     CadastroRepository cadastroRepository = new CadastroRepository();
 
     @GetMapping("/cadastro")
@@ -31,23 +31,24 @@ public class CadastroEndpoint {
             return Response.invalid("Erro ao realizar o cadastro. " + e.getMessage());
         }
     }
-
+    
     @PutMapping("/cadastro")
-    public ResponseEntity<Response> updateCadastro(@RequestBody Cadastro cadastro) {
+    public ResponseEntity<Response> alterarCadastro(@RequestBody Cadastro cadastro) {
         try {
-            return cadastroRepository.salvarCadastro(cadastro);
+            return cadastroRepository.alterarCadastro(cadastro);
         } catch (SQLException e) {
             return Response.invalid("Erro ao realizar o cadastro. " + e.getMessage());
         }
     }
 
-    @DeleteMapping("/cadastro")
-    public ResponseEntity<Response> deleteCadastro(@RequestBody Cadastro cadastro) {
+    @PutMapping("/cadastro-atualizar-senha")
+    public ResponseEntity<Response> alterarCadastroSenha(@RequestBody Cadastro cadastro) {
         try {
-            return cadastroRepository.salvarCadastro(cadastro);
+            return cadastroRepository.alterarCadastroSenha(cadastro);
         } catch (SQLException e) {
             return Response.invalid("Erro ao realizar o cadastro. " + e.getMessage());
         }
     }
+
 
 }

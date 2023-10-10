@@ -10,13 +10,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import prodtalk.entity.Comentario;
 import prodtalk.entity.ComentarioHierarquico;
 import prodtalk.entity.Pessoa;
-import prodtalk.entity.Publicacao;
-import utils.http.Response;
 
 @Repository
 public class ComentarioRepository extends GenericRepository {
@@ -87,6 +84,12 @@ public class ComentarioRepository extends GenericRepository {
             throw e;
         }
 
+        Collections.sort(comentariosHierarquicos, (comentario1, comentario2) -> {
+    Long id1 = (Long) comentario1.get("idComentario");
+    Long id2 = (Long) comentario2.get("idComentario");
+    return id2.compareTo(id1); // Ordernar em ordem decrescente
+});
+
         return comentariosHierarquicos;
     }
 
@@ -116,7 +119,6 @@ public class ComentarioRepository extends GenericRepository {
 
             statement.execute();
 
-            // Após inserir o comentário, obtenha a lista atualizada de comentários hierárquicos
             return buscarComentariosPorPublicacao(comentario.getIdPublicacao());
         } finally {
             if (statement != null) {
