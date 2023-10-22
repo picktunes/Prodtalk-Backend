@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import prodtalk.entity.Categoria;
 import prodtalk.entity.Comentario;
 import prodtalk.entity.Pessoa;
 import prodtalk.entity.PublicacaoCurtida;
@@ -105,6 +106,11 @@ public class GenericRepository {
     protected List<Map<String, Object>> instanciarComentarios(ResultSet resultSet) throws SQLException, Exception {
         ComentarioRepository c = new ComentarioRepository();
         return c.buscarComentariosPorPublicacao(resultSet.getLong("ID_PUBLICACAO"));
+    }
+    
+    protected Categoria instanciarCategoria(ResultSet resultSet) throws SQLException, Exception {
+        CategoriaRepository c = new CategoriaRepository();
+        return c.buscarCategoria(resultSet.getLong("ID_CATEGORIA"));
     }
 
 }

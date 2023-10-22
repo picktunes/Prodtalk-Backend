@@ -7,7 +7,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import prodtalk.entity.Pessoa;
 import utils.http.Response;
