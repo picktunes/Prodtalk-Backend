@@ -15,10 +15,11 @@ public class Publicacao {
     private String conteudo;
     private String titulo;
     private String img;
-    private List<Map<String, Object>> comentarios ; 
+    private List<Map<String, Object>> comentarios; 
+    private Categoria categoria;
 
     public Publicacao(Pessoa pessoa, long idPublicacao, int idPessoa, Date dataCriacao, Date dataAtualizacao, String conteudo, 
-            String titulo, List<Map<String, Object>> comentarios, String img, List<PublicacaoCurtida> publicacaoCurtidas) {
+            String titulo, List<Map<String, Object>> comentarios, String img, List<PublicacaoCurtida> publicacaoCurtidas, Categoria categoria) {
         this.pessoa = pessoa;
         this.idPublicacao = idPublicacao;
         this.idPessoa = idPessoa;
@@ -26,9 +27,10 @@ public class Publicacao {
         this.dataAtualizacao = dataAtualizacao;
         this.conteudo = conteudo;
         this.titulo = titulo;
-        this.comentarios = comentarios; // Inicialize a lista de comentários
+        this.comentarios = comentarios;
         this.img = img;
         this.publicacaoCurtida = publicacaoCurtidas;
+        this.categoria = categoria;
     }
 
     public long getIdPublicacao() {
@@ -109,5 +111,21 @@ public class Publicacao {
 
     public void setComentarios(List<Map<String, Object>> comentarios) {
         this.comentarios = comentarios;
+    }
+    
+    public List<PublicacaoCurtida> getPublicacaoCurtida() {
+        return publicacaoCurtida;
+    }
+
+    public void setPublicacaoCurtida(List<PublicacaoCurtida> publicacaoCurtida) {
+        this.publicacaoCurtida = publicacaoCurtida;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 }

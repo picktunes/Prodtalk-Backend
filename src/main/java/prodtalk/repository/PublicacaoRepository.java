@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+import prodtalk.entity.Categoria;
 import prodtalk.entity.Pessoa;
 import prodtalk.entity.Publicacao;
 import prodtalk.entity.PublicacaoCurtida;
@@ -43,6 +44,7 @@ public class PublicacaoRepository extends GenericRepository {
                 Pessoa pessoa = instanciarPessoa(resultSet);
                 List<PublicacaoCurtida> publicacaoCurtida = instanciarPublicacaoCurtidas(resultSet);
                 List<Map<String, Object>> comentarios = instanciarComentarios(resultSet);
+                Categoria categoria = instanciarCategoria(resultSet);
 
                 Publicacao publicacao = new Publicacao(
                         pessoa,
@@ -54,7 +56,8 @@ public class PublicacaoRepository extends GenericRepository {
                         resultSet.getString("DS_TITULO"),
                         comentarios,
                         blobToString(resultSet.getBlob("IMG")),
-                        publicacaoCurtida
+                        publicacaoCurtida,
+                       categoria
                 );
                 publicacoes.add(publicacao);
             }
@@ -75,14 +78,15 @@ public class PublicacaoRepository extends GenericRepository {
 
             String query = "SELECT * FROM ("
                     + "SELECT a.*, ROWNUM rnum FROM ("
-                    + "SELECT * FROM publicacao WHERE CONTAINS(CONTEUDO, ?, 1) > 0 ORDER BY id_publicacao DESC"
+                    + "SELECT * FROM publicacao WHERE CONTAINS(CONTEUDO, ?, 1) > 0 OR CONTEUDO LIKE ? ORDER BY id_publicacao DESC"
                     + ") a WHERE ROWNUM <= ?"
-                    + ") WHERE rnum > ?";
+                    + ") WHERE rnum >= ?";
 
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setString(1, "%" + texto.toUpperCase() + "%"); // Pesquisa por texto (ignorando maiúsculas/minúsculas)
-            statement.setInt(2, offset);
-            statement.setInt(3, upperLimit);
+            statement.setString(2, "%" + texto.toUpperCase() + "%");
+            statement.setInt(3, offset);
+            statement.setInt(4, upperLimit);
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -90,6 +94,7 @@ public class PublicacaoRepository extends GenericRepository {
                 Pessoa pessoa = instanciarPessoa(resultSet);
                 List<PublicacaoCurtida> publicacaoCurtida = instanciarPublicacaoCurtidas(resultSet);
                 List<Map<String, Object>> comentarios = instanciarComentarios(resultSet);
+                Categoria categoria = instanciarCategoria(resultSet);
 
                 Publicacao publicacao = new Publicacao(
                         pessoa,
@@ -101,7 +106,8 @@ public class PublicacaoRepository extends GenericRepository {
                         resultSet.getString("DS_TITULO"),
                         comentarios,
                         blobToString(resultSet.getBlob("IMG")),
-                        publicacaoCurtida
+                        publicacaoCurtida,
+                        categoria
                 );
                 publicacoes.add(publicacao);
             }
@@ -118,14 +124,15 @@ public class PublicacaoRepository extends GenericRepository {
         try {
             connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
-            String sql = "INSERT INTO PUBLICACAO (ID_PUBLICACAO, DT_CRIACAO, DT_ATUALIZACAO, CONTEUDO, QT_LIKES, ID_PESSOA, DS_TITULO, IMG)\n"
-                    + "VALUES (SEQ_PUBLICACAO.NEXTVAL, SYSDATE, SYSDATE, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO PUBLICACAO (ID_PUBLICACAO, DT_CRIACAO, DT_ATUALIZACAO, CONTEUDO, QT_LIKES, ID_PESSOA, DS_TITULO, IMG, ID_CATEGORIA)\n"
+                    + "VALUES (SEQ_PUBLICACAO.NEXTVAL, SYSDATE, SYSDATE, ?, ?, ?, ?, ?, ?)";
             statement = connection.prepareStatement(sql);
             statement.setString(1, publicacao.getConteudo());
             statement.setInt(2, 0);
             statement.setInt(3, 1);
             statement.setString(4, publicacao.getTitulo());
             statement.setBlob(5, stringToBlob(publicacao.getImg(), connection));
+            statement.setLong(6, publicacao.getCategoria().getIdCategoria());
 
             statement.execute();
 
