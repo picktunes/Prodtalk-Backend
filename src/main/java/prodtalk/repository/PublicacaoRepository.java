@@ -19,7 +19,7 @@ import utils.http.Response;
 @Repository
 public class PublicacaoRepository extends GenericRepository {
 
-    public List<Publicacao> buscarPublicacoesSelecionadas(int page, int pageSize) throws Exception {
+    public List<Publicacao> buscarPublicacoesSelecionadas(int page, int pageSize, Integer idCategoria) throws Exception {
         List<Publicacao> publicacoes = new ArrayList<>();
 
         try {
@@ -30,13 +30,27 @@ public class PublicacaoRepository extends GenericRepository {
 
             String query = "SELECT * FROM ("
                     + "SELECT a.*, ROWNUM rnum FROM ("
-                    + "SELECT * FROM publicacao ORDER BY id_publicacao DESC"
+                    + "SELECT * FROM publicacao";
+
+            if (idCategoria != null) {
+                query += " WHERE ID_CATEGORIA = ? ";
+            }
+
+            query += " ORDER BY id_publicacao DESC"
                     + ") a WHERE ROWNUM <= ?"
                     + ") WHERE rnum > ?";
 
             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, offset);
-            statement.setInt(2, upperLimit);
+
+            int parameterIndex = 1;
+
+            if (idCategoria != null) {
+                statement.setInt(parameterIndex, idCategoria);
+                parameterIndex++;
+            }
+
+            statement.setInt(parameterIndex, offset);
+            statement.setInt(parameterIndex + 1, upperLimit);
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -57,7 +71,7 @@ public class PublicacaoRepository extends GenericRepository {
                         comentarios,
                         blobToString(resultSet.getBlob("IMG")),
                         publicacaoCurtida,
-                       categoria
+                        categoria
                 );
                 publicacoes.add(publicacao);
             }

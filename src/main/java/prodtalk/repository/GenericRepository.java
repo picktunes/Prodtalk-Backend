@@ -93,7 +93,7 @@ public class GenericRepository {
         return blob;
     }
     
-    protected Pessoa instanciarPessoa(ResultSet resultSet) throws SQLException {
+    protected Pessoa instanciarPessoa(ResultSet resultSet) throws SQLException, IOException {
         PessoaRepository p = new PessoaRepository();
         return p.getPessoaId(resultSet.getInt("ID_PESSOA"));
     }

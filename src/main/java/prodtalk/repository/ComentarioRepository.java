@@ -1,5 +1,6 @@
 package prodtalk.repository;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -18,7 +19,7 @@ import prodtalk.entity.Pessoa;
 @Repository
 public class ComentarioRepository extends GenericRepository {
 
-    public List<Map<String, Object>> buscarComentariosPorPublicacao(long idPublicacao) throws SQLException {
+    public List<Map<String, Object>> buscarComentariosPorPublicacao(long idPublicacao) throws SQLException, IOException {
         List<Map<String, Object>> comentariosHierarquicos = new ArrayList<>();
         Map<Long, Map<String, Object>> comentarioMap = new HashMap<>();
 

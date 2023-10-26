@@ -26,10 +26,11 @@ public class PublicacaoEndpoint {
     }
 
     @GetMapping
-    public List<Publicacao> buscarPublicacoes(@RequestParam(defaultValue = "1") int page) throws Exception {
+    public List<Publicacao> buscarPublicacoes(@RequestParam(defaultValue = "1") int page,
+        @RequestParam(required = false) Integer idCategoria) throws Exception {
         int pageSize = 10;
         int offset = page * 10;
-        List<Publicacao> publicacoes = publicacaoRepository.buscarPublicacoesSelecionadas(offset, pageSize);
+        List<Publicacao> publicacoes = publicacaoRepository.buscarPublicacoesSelecionadas(offset, pageSize, idCategoria);
         return publicacoes;
     }
 
