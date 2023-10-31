@@ -214,11 +214,4 @@ public class CategoriaRepository extends GenericRepository {
         }
     }
 
-    public static void setLongOrNull(PreparedStatement statement, int parameterIndex, Long value) throws SQLException {
-        if (value != null) {
-            statement.setLong(parameterIndex, value);
-        } else {
-            statement.setNull(parameterIndex, java.sql.Types.BIGINT);
-        }
-    }
 }

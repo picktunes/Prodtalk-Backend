@@ -27,7 +27,7 @@ public class PublicacaoEndpoint {
 
     @GetMapping
     public List<Publicacao> buscarPublicacoes(@RequestParam(defaultValue = "1") int page,
-        @RequestParam(required = false) Integer idCategoria) throws Exception {
+            @RequestParam(required = false) Integer idCategoria) throws Exception {
         int pageSize = 10;
         int offset = page * 10;
         List<Publicacao> publicacoes = publicacaoRepository.buscarPublicacoesSelecionadas(offset, pageSize, idCategoria);
@@ -37,8 +37,8 @@ public class PublicacaoEndpoint {
     @GetMapping("/buscar-publicacoes")
     public List<Publicacao> buscarPublicacoesPorTexto(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam String texto ) throws Exception {
-        int pageSize = 10; 
+            @RequestParam String texto) throws Exception {
+        int pageSize = 10;
         int offset = page * 10;
 
         List<Publicacao> publicacoes = publicacaoRepository.buscarPublicacoesPorTexto(texto, offset, pageSize);
