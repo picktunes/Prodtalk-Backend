@@ -2,6 +2,7 @@ package prodtalk.repository;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import entity.Cadastro;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,29 +16,29 @@ import utils.http.Response;
 
 public class PessoaRepository extends GenericRepository {
 
-    public Pessoa getPessoa(long nrSeqCadastro) throws SQLException {
+    public Pessoa getPessoa(long nrSeqCadastro) throws SQLException, IOException {
         Connection connection = null;
         PreparedStatement statement = null;
 
         try {
             connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
-            String sql = " select ID_PESSOA, DS_NOME_COMPLETO, DS_SEXO, NR_IDADE, DS_PROFISSAO, DS_BIOGRAFIA, DS_INTERESSES, IMG "
+            String sql = " select ID_PESSOA, DS_NOME_COMPLETO, DS_SEXO, NR_IDADE, DS_PROFISSAO, DS_BIOGRAFIA, DS_INTERESSES, BLB_FOTO_PERFIL "
                     + " from pessoa "
-                    + " where nr_seq_cadastro = ? ";
+                    + " where id_cadastro = ? ";
             statement = connection.prepareStatement(sql);
             statement.setLong(1, nrSeqCadastro);
 
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
-                Pessoa pessoa = new Pessoa(
+                    Pessoa pessoa = new Pessoa(
                         resultSet.getLong("ID_PESSOA"),
                         resultSet.getString("DS_NOME_COMPLETO"),
                         resultSet.getString("DS_SEXO"),
                         resultSet.getInt("NR_IDADE"),
                         resultSet.getString("DS_PROFISSAO"),
-                        //resultSet.getBlob("IMG"),
+                        blobToString(resultSet.getBlob("BLB_FOTO_PERFIL")),
                         resultSet.getString("DS_BIOGRAFIA"));
                 return pessoa;
             }
@@ -53,14 +54,14 @@ public class PessoaRepository extends GenericRepository {
         }
     }
 
-    public Pessoa getPessoaId(long idCadastro) throws SQLException {
+    public Pessoa getPessoaId(long idCadastro) throws SQLException, IOException {
         Connection connection = null;
         PreparedStatement statement = null;
 
         try {
             connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
-            String sql = " select ID_PESSOA, DS_NOME_COMPLETO, DS_SEXO, NR_IDADE, DS_PROFISSAO, DS_BIOGRAFIA, IMG "
+            String sql = " select ID_PESSOA, DS_NOME_COMPLETO, DS_SEXO, NR_IDADE, DS_PROFISSAO, DS_BIOGRAFIA, BLB_FOTO_PERFIL "
                     + " from pessoa "
                     + " where id_pessoa = ? ";
             statement = connection.prepareStatement(sql);
@@ -75,7 +76,7 @@ public class PessoaRepository extends GenericRepository {
                         resultSet.getString("DS_SEXO"),
                         resultSet.getInt("NR_IDADE"),
                         resultSet.getString("DS_PROFISSAO"),
-                        //resultSet.getBlob("IMG"),
+                        blobToString(resultSet.getBlob("BLB_FOTO_PERFIL")),
                         resultSet.getString("DS_BIOGRAFIA"));
                 return pessoa;
             }
@@ -117,7 +118,7 @@ public class PessoaRepository extends GenericRepository {
         }
     }
 
-    public ResponseEntity<Response> alterarPessoa(Pessoa pessoa) throws SQLException {
+    public ResponseEntity<Response> alterarPessoa(Pessoa pessoa) throws SQLException, Exception {
         Connection connection = null;
         PreparedStatement statement = null;
 
@@ -125,7 +126,7 @@ public class PessoaRepository extends GenericRepository {
             connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
             String sql = "UPDATE pessoa "
-                    + "SET DS_SEXO = ?, DS_PROFISSAO = ?, DS_BIOGRAFIA = ?, DS_NOME_COMPLETO = ? "
+                    + "SET DS_SEXO = ?, DS_PROFISSAO = ?, DS_BIOGRAFIA = ?, DS_NOME_COMPLETO = ?, BLB_FOTO_PERFIL = ? "
                     + "WHERE ID_PESSOA = ?";
 
             statement = connection.prepareStatement(sql);
@@ -133,7 +134,8 @@ public class PessoaRepository extends GenericRepository {
             statement.setString(2, pessoa.getProfissao());
             statement.setString(3, pessoa.getBiografia());
             statement.setString(4, pessoa.getNomeCompleto());
-            statement.setLong(5, pessoa.getIdPessoa());
+            statement.setBlob(5, stringToBlob(pessoa.getFotoPerfil(), connection));
+            statement.setLong(6, pessoa.getIdPessoa());
 
             statement.execute();
 

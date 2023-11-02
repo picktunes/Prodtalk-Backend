@@ -69,7 +69,7 @@ public class PessoaCategoriaRepository extends GenericRepository {
         try {
             connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
-            String sql = "INSERT INTO pessoa_categoria (ID_PESSOA, ID_CATEGORIA, DT_CRIACAO) VALUES (?, ?, CURRENT_TIMESTAMP)";
+            String sql = "INSERT INTO pessoa_categoria (ID_PESSOA_CATEGORIA, ID_PESSOA, ID_CATEGORIA, DT_CRIACAO) VALUES (SEQ_PESSOA_CATEGORIA.nextval, ?, ?, CURRENT_TIMESTAMP)";
             statement = connection.prepareStatement(sql);
             statement.setLong(1, idPessoa);
             statement.setLong(2, idCategoria);

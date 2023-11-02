@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ import utils.http.Response;
 @Repository
 public class PublicacaoRepository extends GenericRepository {
 
-    public List<Publicacao> buscarPublicacoesSelecionadas(int page, int pageSize) throws Exception {
+    public List<Publicacao> buscarPublicacoesSelecionadas(int page, int pageSize, Integer idCategoria) throws Exception {
         List<Publicacao> publicacoes = new ArrayList<>();
 
         try {
@@ -30,13 +31,27 @@ public class PublicacaoRepository extends GenericRepository {
 
             String query = "SELECT * FROM ("
                     + "SELECT a.*, ROWNUM rnum FROM ("
-                    + "SELECT * FROM publicacao ORDER BY id_publicacao DESC"
+                    + "SELECT * FROM publicacao";
+
+            if (idCategoria != null) {
+                query += " WHERE ID_CATEGORIA = ? ";
+            }
+
+            query += " ORDER BY id_publicacao DESC"
                     + ") a WHERE ROWNUM <= ?"
                     + ") WHERE rnum > ?";
 
             PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, offset);
-            statement.setInt(2, upperLimit);
+
+            int parameterIndex = 1;
+
+            if (idCategoria != null) {
+                statement.setInt(parameterIndex, idCategoria);
+                parameterIndex++;
+            }
+
+            statement.setInt(parameterIndex, offset);
+            statement.setInt(parameterIndex + 1, upperLimit);
 
             ResultSet resultSet = statement.executeQuery();
 
@@ -57,7 +72,7 @@ public class PublicacaoRepository extends GenericRepository {
                         comentarios,
                         blobToString(resultSet.getBlob("IMG")),
                         publicacaoCurtida,
-                       categoria
+                        categoria
                 );
                 publicacoes.add(publicacao);
             }
@@ -65,6 +80,44 @@ public class PublicacaoRepository extends GenericRepository {
             e.printStackTrace();
         }
         return publicacoes;
+    }
+
+    public Publicacao buscarPublicacaoPorID(long publicacaoID) throws Exception {
+        Publicacao publicacao = null;
+
+        try {
+            Connection connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
+
+            String query = "SELECT * FROM publicacao WHERE ID_PUBLICACAO = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setLong(1, publicacaoID);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                Pessoa pessoa = instanciarPessoa(resultSet);
+                List<PublicacaoCurtida> publicacaoCurtida = instanciarPublicacaoCurtidas(resultSet);
+                List<Map<String, Object>> comentarios = instanciarComentarios(resultSet);
+                Categoria categoria = instanciarCategoria(resultSet);
+
+                publicacao = new Publicacao(
+                        pessoa,
+                        resultSet.getInt("ID_PUBLICACAO"),
+                        resultSet.getInt("ID_PESSOA"),
+                        resultSet.getDate("DT_CRIACAO"),
+                        resultSet.getDate("DT_ATUALIZACAO"),
+                        resultSet.getString("CONTEUDO"),
+                        resultSet.getString("DS_TITULO"),
+                        comentarios,
+                        blobToString(resultSet.getBlob("IMG")),
+                        publicacaoCurtida,
+                        categoria
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return publicacao;
     }
 
     public List<Publicacao> buscarPublicacoesPorTexto(String texto, int page, int pageSize) throws Exception {
@@ -129,11 +182,13 @@ public class PublicacaoRepository extends GenericRepository {
             statement = connection.prepareStatement(sql);
             statement.setString(1, publicacao.getConteudo());
             statement.setInt(2, 0);
-            statement.setInt(3, 1);
+            statement.setInt(3, publicacao.getIdPessoa());
             statement.setString(4, publicacao.getTitulo());
             statement.setBlob(5, stringToBlob(publicacao.getImg(), connection));
-            statement.setLong(6, publicacao.getCategoria().getIdCategoria());
-
+            statement.setObject(6, returnIfNotNull(publicacao, null)
+                    .map(Publicacao::getCategoria)
+                    .map(Categoria::getIdCategoria)
+                    .orElse(null));
             statement.execute();
 
             return Response.ok("Sucesso ao cadastrar a publicação!");

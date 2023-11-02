@@ -11,15 +11,24 @@ public class Pessoa {
     private Integer idade;
     private String profissao;
     private String biografia;
+    private String fotoPerfil;
     
-    public Pessoa(Long idPessoa, String nomeCompleto, String sexo, Integer idade, String profissao,/* Blob img,*/ String biografia) {
+    public Pessoa(Long idPessoa, String nomeCompleto, String sexo, Integer idade, String profissao, String fotoPerfil, String biografia) {
         this.idPessoa = idPessoa;
         this.nomeCompleto = nomeCompleto;
         this.sexo = sexo;
         this.idade = idade;
         this.profissao = profissao;
-        //this.fotoPerfil = img;
+        this.fotoPerfil = fotoPerfil;
         this.biografia = biografia;
+    }
+
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
     }
     
     public Long getIdPessoa() {

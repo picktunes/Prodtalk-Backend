@@ -6,14 +6,17 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import prodtalk.entity.Categoria;
 import prodtalk.entity.Comentario;
 import prodtalk.entity.Pessoa;
+import prodtalk.entity.Publicacao;
 import prodtalk.entity.PublicacaoCurtida;
 import utils.http.BancoDadosConfig;
 import utils.http.BlobUtils;
@@ -92,12 +95,12 @@ public class GenericRepository {
         blob.setBytes(1, bytes);
         return blob;
     }
-    
-    protected Pessoa instanciarPessoa(ResultSet resultSet) throws SQLException {
+
+    protected Pessoa instanciarPessoa(ResultSet resultSet) throws SQLException, IOException {
         PessoaRepository p = new PessoaRepository();
         return p.getPessoaId(resultSet.getInt("ID_PESSOA"));
     }
-    
+
     protected List<PublicacaoCurtida> instanciarPublicacaoCurtidas(ResultSet resultSet) throws SQLException, Exception {
         PublicacaoCurtidaRepository p = new PublicacaoCurtidaRepository();
         return p.buscarPublicacaoCurtidaPorPublicacao(resultSet.getLong("ID_PUBLICACAO"));
@@ -107,10 +110,27 @@ public class GenericRepository {
         ComentarioRepository c = new ComentarioRepository();
         return c.buscarComentariosPorPublicacao(resultSet.getLong("ID_PUBLICACAO"));
     }
-    
+
     protected Categoria instanciarCategoria(ResultSet resultSet) throws SQLException, Exception {
         CategoriaRepository c = new CategoriaRepository();
         return c.buscarCategoria(resultSet.getLong("ID_CATEGORIA"));
+    }
+    
+    protected Publicacao instanciarPublicacao(ResultSet resultSet) throws SQLException, Exception {
+        PublicacaoRepository p = new PublicacaoRepository();
+        return p.buscarPublicacaoPorID(resultSet.getLong("ID_PUBLICACAO"));
+    }
+
+    public static void setLongOrNull(PreparedStatement statement, int parameterIndex, Long value) throws SQLException {
+        if (value != null) {
+            statement.setLong(parameterIndex, value);
+        } else {
+            statement.setNull(parameterIndex, java.sql.Types.BIGINT);
+        }
+    }
+
+    public static <T> Optional<T> returnIfNotNull(T value, T defaultValue) {
+        return Optional.ofNullable(value != null ? value : defaultValue);
     }
 
 }

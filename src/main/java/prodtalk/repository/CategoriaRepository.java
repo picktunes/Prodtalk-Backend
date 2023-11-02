@@ -120,7 +120,7 @@ public class CategoriaRepository extends GenericRepository {
             connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
             String sql = "INSERT INTO categoria (ID_CATEGORIA, DS_NOME, DS_DESCRICAO, IMG, IMG_CAPA, DT_CRIACAO, DT_ATUALIZACAO, IE_STATUS,"
-                    + " ID_CATEGORIA_PAI, ID_PESSOA_AUTOR, CONTADOR_VISUALIZACOES) VALUES (categoria_seq.NEXTVAL, ?, ?, ?, ?, sysdate, sysdate,  ?, ?, ?, ?)";
+                    + " ID_CATEGORIA_PAI, ID_PESSOA_AUTOR, CONTADOR_VISUALIZACOES) VALUES (CATEGORIA_SEQ.NEXTVAL, ?, ?, ?, ?, sysdate, sysdate,  ?, ?, ?, ?)";
             statement = connection.prepareStatement(sql);
             statement.setString(1, categoria.getDsNome());
             statement.setString(2, categoria.getDsDescricao());
@@ -214,11 +214,4 @@ public class CategoriaRepository extends GenericRepository {
         }
     }
 
-    public static void setLongOrNull(PreparedStatement statement, int parameterIndex, Long value) throws SQLException {
-        if (value != null) {
-            statement.setLong(parameterIndex, value);
-        } else {
-            statement.setNull(parameterIndex, java.sql.Types.BIGINT);
-        }
-    }
 }

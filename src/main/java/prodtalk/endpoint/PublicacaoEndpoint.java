@@ -26,18 +26,29 @@ public class PublicacaoEndpoint {
     }
 
     @GetMapping
-    public List<Publicacao> buscarPublicacoes(@RequestParam(defaultValue = "1") int page) throws Exception {
+    public List<Publicacao> buscarPublicacoes(@RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) Integer idCategoria) throws Exception {
         int pageSize = 10;
         int offset = page * 10;
-        List<Publicacao> publicacoes = publicacaoRepository.buscarPublicacoesSelecionadas(offset, pageSize);
+        List<Publicacao> publicacoes = publicacaoRepository.buscarPublicacoesSelecionadas(offset, pageSize, idCategoria);
         return publicacoes;
+    }
+
+    @GetMapping("/buscar-publicacao")
+    public ResponseEntity<?> buscarPublicacaoPorID(@RequestParam long idPublicacao) {
+        try {
+            Publicacao publicacao = publicacaoRepository.buscarPublicacaoPorID(idPublicacao);
+            return ResponseEntity.ok(publicacao);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Erro ao buscar a publicação. " + e.getMessage());
+        }
     }
 
     @GetMapping("/buscar-publicacoes")
     public List<Publicacao> buscarPublicacoesPorTexto(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam String texto ) throws Exception {
-        int pageSize = 10; 
+            @RequestParam String texto) throws Exception {
+        int pageSize = 10;
         int offset = page * 10;
 
         List<Publicacao> publicacoes = publicacaoRepository.buscarPublicacoesPorTexto(texto, offset, pageSize);
