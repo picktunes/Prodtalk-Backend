@@ -34,6 +34,16 @@ public class PublicacaoEndpoint {
         return publicacoes;
     }
 
+    @GetMapping("/buscar-publicacao")
+    public ResponseEntity<?> buscarPublicacaoPorID(@RequestParam long idPublicacao) {
+        try {
+            Publicacao publicacao = publicacaoRepository.buscarPublicacaoPorID(idPublicacao);
+            return ResponseEntity.ok(publicacao);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Erro ao buscar a publicação. " + e.getMessage());
+        }
+    }
+
     @GetMapping("/buscar-publicacoes")
     public List<Publicacao> buscarPublicacoesPorTexto(
             @RequestParam(defaultValue = "1") int page,
