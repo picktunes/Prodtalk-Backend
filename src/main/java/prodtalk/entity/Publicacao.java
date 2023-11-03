@@ -17,9 +17,11 @@ public class Publicacao {
     private String img;
     private List<Map<String, Object>> comentarios; 
     private Categoria categoria;
+    private boolean publicacaoSalva;
 
     public Publicacao(Pessoa pessoa, long idPublicacao, int idPessoa, Date dataCriacao, Date dataAtualizacao, String conteudo, 
-            String titulo, List<Map<String, Object>> comentarios, String img, List<PublicacaoCurtida> publicacaoCurtidas, Categoria categoria) {
+            String titulo, List<Map<String, Object>> comentarios, String img, List<PublicacaoCurtida> publicacaoCurtidas, Categoria categoria, 
+            boolean publicacaoSalva ) {
         this.pessoa = pessoa;
         this.idPublicacao = idPublicacao;
         this.idPessoa = idPessoa;
@@ -31,6 +33,7 @@ public class Publicacao {
         this.img = img;
         this.publicacaoCurtida = publicacaoCurtidas;
         this.categoria = categoria;
+        this.publicacaoSalva = publicacaoSalva;
     }
 
     public long getIdPublicacao() {
@@ -127,5 +130,13 @@ public class Publicacao {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+    public boolean isPublicacaoSalva() {
+        return publicacaoSalva;
+    }
+
+    public void setPublicacaoSalva(boolean publicacaoSalva) {
+        this.publicacaoSalva = publicacaoSalva;
     }
 }

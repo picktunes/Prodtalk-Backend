@@ -15,6 +15,7 @@ import prodtalk.entity.Categoria;
 import prodtalk.entity.Pessoa;
 import prodtalk.entity.Publicacao;
 import prodtalk.entity.PublicacaoCurtida;
+import prodtalk.repository.PublicacaoSalvaRepository;
 import utils.http.Response;
 
 @Repository
@@ -22,6 +23,7 @@ public class PublicacaoRepository extends GenericRepository {
 
     public List<Publicacao> buscarPublicacoesSelecionadas(int page, int pageSize, Integer idCategoria) throws Exception {
         List<Publicacao> publicacoes = new ArrayList<>();
+        PublicacaoSalvaRepository publicacaoSalvaRepository = new PublicacaoSalvaRepository();
 
         try {
             Connection connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
@@ -72,7 +74,9 @@ public class PublicacaoRepository extends GenericRepository {
                         comentarios,
                         blobToString(resultSet.getBlob("IMG")),
                         publicacaoCurtida,
-                        categoria
+                        categoria,
+                        publicacaoSalvaRepository.verificarPublicacaoSalva(resultSet.getInt("ID_PESSOA"), resultSet.getInt("ID_PUBLICACAO")
+                        )
                 );
                 publicacoes.add(publicacao);
             }
@@ -84,6 +88,7 @@ public class PublicacaoRepository extends GenericRepository {
 
     public Publicacao buscarPublicacaoPorID(long publicacaoID) throws Exception {
         Publicacao publicacao = null;
+        PublicacaoSalvaRepository publicacaoSalvaRepository = new PublicacaoSalvaRepository();
 
         try {
             Connection connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
@@ -111,7 +116,9 @@ public class PublicacaoRepository extends GenericRepository {
                         comentarios,
                         blobToString(resultSet.getBlob("IMG")),
                         publicacaoCurtida,
-                        categoria
+                        categoria,
+                        publicacaoSalvaRepository.verificarPublicacaoSalva(resultSet.getInt("ID_PESSOA"), resultSet.getInt("ID_PUBLICACAO")
+                        )
                 );
             }
         } catch (SQLException e) {
@@ -122,6 +129,7 @@ public class PublicacaoRepository extends GenericRepository {
 
     public List<Publicacao> buscarPublicacoesPorTexto(String texto, int page, int pageSize) throws Exception {
         List<Publicacao> publicacoes = new ArrayList<>();
+        PublicacaoSalvaRepository publicacaoSalvaRepository = new PublicacaoSalvaRepository();
 
         try {
             Connection connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
@@ -160,7 +168,8 @@ public class PublicacaoRepository extends GenericRepository {
                         comentarios,
                         blobToString(resultSet.getBlob("IMG")),
                         publicacaoCurtida,
-                        categoria
+                        categoria,
+                        publicacaoSalvaRepository.verificarPublicacaoSalva(resultSet.getInt("ID_PESSOA"), resultSet.getInt("ID_PUBLICACAO"))
                 );
                 publicacoes.add(publicacao);
             }
