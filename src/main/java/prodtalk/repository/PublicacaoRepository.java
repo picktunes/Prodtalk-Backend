@@ -15,6 +15,7 @@ import prodtalk.entity.Categoria;
 import prodtalk.entity.Pessoa;
 import prodtalk.entity.Publicacao;
 import prodtalk.entity.PublicacaoCurtida;
+import prodtalk.repository.PublicacaoSalvaRepository;
 import utils.http.Response;
 
 @Repository
@@ -22,9 +23,12 @@ public class PublicacaoRepository extends GenericRepository {
 
     public List<Publicacao> buscarPublicacoesSelecionadas(int page, int pageSize, Integer idCategoria) throws Exception {
         List<Publicacao> publicacoes = new ArrayList<>();
+        PublicacaoSalvaRepository publicacaoSalvaRepository = new PublicacaoSalvaRepository();
+        Connection connection = null;
+        PreparedStatement statement = null;
 
         try {
-            Connection connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
+            connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
             int offset = page;
             int upperLimit = page - 10;
@@ -41,7 +45,7 @@ public class PublicacaoRepository extends GenericRepository {
                     + ") a WHERE ROWNUM <= ?"
                     + ") WHERE rnum > ?";
 
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
 
             int parameterIndex = 1;
 
@@ -72,24 +76,36 @@ public class PublicacaoRepository extends GenericRepository {
                         comentarios,
                         blobToString(resultSet.getBlob("IMG")),
                         publicacaoCurtida,
-                        categoria
+                        categoria,
+                        publicacaoSalvaRepository.verificarPublicacaoSalva(resultSet.getInt("ID_PESSOA"), resultSet.getInt("ID_PUBLICACAO")
+                        )
                 );
                 publicacoes.add(publicacao);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
         return publicacoes;
     }
 
     public Publicacao buscarPublicacaoPorID(long publicacaoID) throws Exception {
         Publicacao publicacao = null;
+        PublicacaoSalvaRepository publicacaoSalvaRepository = new PublicacaoSalvaRepository();
+        Connection connection = null;
+        PreparedStatement statement = null;
 
         try {
-            Connection connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
+            connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
             String query = "SELECT * FROM publicacao WHERE ID_PUBLICACAO = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setLong(1, publicacaoID);
 
             ResultSet resultSet = statement.executeQuery();
@@ -111,20 +127,95 @@ public class PublicacaoRepository extends GenericRepository {
                         comentarios,
                         blobToString(resultSet.getBlob("IMG")),
                         publicacaoCurtida,
-                        categoria
+                        categoria,
+                        publicacaoSalvaRepository.verificarPublicacaoSalva(resultSet.getInt("ID_PESSOA"), resultSet.getInt("ID_PUBLICACAO")
+                        )
                 );
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
         return publicacao;
     }
 
-    public List<Publicacao> buscarPublicacoesPorTexto(String texto, int page, int pageSize) throws Exception {
-        List<Publicacao> publicacoes = new ArrayList<>();
+    public List<Publicacao> buscarPublicacoesFavoritas(int page, int pageSize, long idPessoa) throws Exception {
+        List<Publicacao> publicacoesFavoritas = new ArrayList<>();
+        PublicacaoSalvaRepository publicacaoSalvaRepository = new PublicacaoSalvaRepository();
+        Connection connection = null;
+        PreparedStatement statement = null;
 
         try {
-            Connection connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
+            connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
+            int upperLimit = page - 10;
+
+            String query = "SELECT * FROM ("
+                    + "SELECT p.*, ROWNUM AS rnum FROM ("
+                    + "SELECT p.* FROM publicacao p "
+                    + "INNER JOIN publicacao_salva ps ON p.ID_PUBLICACAO = ps.ID_PUBLICACAO "
+                    + "WHERE ps.ID_PESSOA = ? "
+                    + "ORDER BY p.ID_PUBLICACAO DESC) p "
+                    + "WHERE ROWNUM <= ?"
+                    + ") "
+                    + "WHERE rnum > ?";
+
+            statement = connection.prepareStatement(query);
+            statement.setLong(1, idPessoa);
+            statement.setInt(2, page);
+            statement.setInt(3, upperLimit);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Pessoa pessoa = instanciarPessoa(resultSet);
+                List<PublicacaoCurtida> publicacaoCurtida = instanciarPublicacaoCurtidas(resultSet);
+                List<Map<String, Object>> comentarios = instanciarComentarios(resultSet);
+                Categoria categoria = instanciarCategoria(resultSet);
+
+                Publicacao publicacao = new Publicacao(
+                        pessoa,
+                        resultSet.getInt("ID_PUBLICACAO"),
+                        resultSet.getInt("ID_PESSOA"),
+                        resultSet.getDate("DT_CRIACAO"),
+                        resultSet.getDate("DT_ATUALIZACAO"),
+                        resultSet.getString("CONTEUDO"),
+                        resultSet.getString("DS_TITULO"),
+                        comentarios,
+                        blobToString(resultSet.getBlob("IMG")),
+                        publicacaoCurtida,
+                        categoria,
+                        publicacaoSalvaRepository.verificarPublicacaoSalva(resultSet.getInt("ID_PESSOA"), resultSet.getInt("ID_PUBLICACAO"))
+                );
+
+                publicacoesFavoritas.add(publicacao);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        }
+        return publicacoesFavoritas;
+    }
+
+    public List<Publicacao> buscarPublicacoesPorTexto(String texto, int page, int pageSize) throws Exception {
+        List<Publicacao> publicacoes = new ArrayList<>();
+        PublicacaoSalvaRepository publicacaoSalvaRepository = new PublicacaoSalvaRepository();
+        Connection connection = null;
+        PreparedStatement statement = null;
+
+        try {
+            connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
             int offset = page;
             int upperLimit = page - 10;
@@ -135,7 +226,7 @@ public class PublicacaoRepository extends GenericRepository {
                     + ") a WHERE ROWNUM <= ?"
                     + ") WHERE rnum >= ?";
 
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setString(1, "%" + texto.toUpperCase() + "%"); // Pesquisa por texto (ignorando maiúsculas/minúsculas)
             statement.setString(2, "%" + texto.toUpperCase() + "%");
             statement.setInt(3, offset);
@@ -160,12 +251,20 @@ public class PublicacaoRepository extends GenericRepository {
                         comentarios,
                         blobToString(resultSet.getBlob("IMG")),
                         publicacaoCurtida,
-                        categoria
+                        categoria,
+                        publicacaoSalvaRepository.verificarPublicacaoSalva(resultSet.getInt("ID_PESSOA"), resultSet.getInt("ID_PUBLICACAO"))
                 );
                 publicacoes.add(publicacao);
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
         return publicacoes;
     }

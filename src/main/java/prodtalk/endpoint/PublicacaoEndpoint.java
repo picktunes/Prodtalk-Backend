@@ -2,6 +2,7 @@ package prodtalk.endpoint;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,16 +45,17 @@ public class PublicacaoEndpoint {
         }
     }
 
-    @GetMapping("/buscar-publicacoes")
-    public List<Publicacao> buscarPublicacoesPorTexto(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam String texto) throws Exception {
-        int pageSize = 10;
-        int offset = page * 10;
-
-        List<Publicacao> publicacoes = publicacaoRepository.buscarPublicacoesPorTexto(texto, offset, pageSize);
-
-        return publicacoes;
+    @GetMapping("/buscar-publicacoes-favoritas")
+    public ResponseEntity<?> buscarPublicacoesFavoritas(@RequestParam(defaultValue = "1") int page,
+            @RequestParam long idPessoa) {
+        try {
+            int pageSize = 10;
+            int offset = page * 10;
+            List<Publicacao> publicacoes = publicacaoRepository.buscarPublicacoesFavoritas(offset, pageSize, idPessoa);
+            return ResponseEntity.ok(publicacoes);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar as publicações favoritas. " + e.getMessage());
+        }
     }
 
     @PostMapping

@@ -17,51 +17,51 @@ import prodtalk.entity.Notificacao;
 import prodtalk.entity.Publicacao;
 
 @Repository
-public class NotificacaoRepository extends GenericRepository  {
-    
+public class NotificacaoRepository extends GenericRepository {
+
     public List<Notificacao> buscarNotificacoesPorIdPessoa(Long idPessoa) throws SQLException, Exception {
-    Connection connection = null;
-    PreparedStatement statement = null;
+        Connection connection = null;
+        PreparedStatement statement = null;
 
-    try {
-        connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
+        try {
+            connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
-        String sql = "SELECT p.ID_PUBLICACAO, n.ID_TIPO_NOTIFICACAO, COUNT(n.ID_TIPO_NOTIFICACAO) as NUMERO_NOTIFICACOES " +
-             "FROM notificacao n " +
-             "INNER JOIN publicacao p ON n.ID_PUBLICACAO = p.ID_PUBLICACAO " +
-             "WHERE p.ID_PESSOA = ? AND n.ID_PESSOA <> ? " +
-             "GROUP BY p.ID_PUBLICACAO, n.ID_TIPO_NOTIFICACAO " +
-             "ORDER BY p.ID_PUBLICACAO desc, n.ID_TIPO_NOTIFICACAO";
+            String sql = "SELECT p.ID_PUBLICACAO, n.ID_TIPO_NOTIFICACAO, COUNT(n.ID_TIPO_NOTIFICACAO) as NUMERO_NOTIFICACOES "
+                    + "FROM notificacao n "
+                    + "INNER JOIN publicacao p ON n.ID_PUBLICACAO = p.ID_PUBLICACAO "
+                    + "WHERE p.ID_PESSOA = ? AND n.ID_PESSOA <> ? "
+                    + "GROUP BY p.ID_PUBLICACAO, n.ID_TIPO_NOTIFICACAO "
+                    + "ORDER BY p.ID_PUBLICACAO desc, n.ID_TIPO_NOTIFICACAO";
 
-        statement = connection.prepareStatement(sql);
-        statement.setLong(1, idPessoa);
-        statement.setLong(2, idPessoa);
+            statement = connection.prepareStatement(sql);
+            statement.setLong(1, idPessoa);
+            statement.setLong(2, idPessoa);
 
-        ResultSet resultSet = statement.executeQuery();
-        List<Notificacao> notificacoes = new ArrayList<>();
+            ResultSet resultSet = statement.executeQuery();
+            List<Notificacao> notificacoes = new ArrayList<>();
 
-        while (resultSet.next()) {
-            
-            Publicacao publicacao = instanciarPublicacao(resultSet);
-            
-            Notificacao notificacao = new Notificacao(
-                resultSet.getLong("ID_TIPO_NOTIFICACAO"),
-                publicacao,
-                resultSet.getInt("NUMERO_NOTIFICACOES")
-            );
+            while (resultSet.next()) {
 
-            notificacoes.add(notificacao);
-        }
+                Publicacao publicacao = instanciarPublicacao(resultSet);
 
-        return notificacoes;
-    } finally {
-        if (statement != null) {
-            statement.close();
-        }
-        if (connection != null) {
-            connection.close();
+                Notificacao notificacao = new Notificacao(
+                        resultSet.getLong("ID_TIPO_NOTIFICACAO"),
+                        publicacao,
+                        resultSet.getInt("NUMERO_NOTIFICACOES")
+                );
+
+                notificacoes.add(notificacao);
+            }
+
+            return notificacoes;
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
     }
-}
-    
+
 }
