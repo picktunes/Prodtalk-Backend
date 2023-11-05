@@ -22,9 +22,11 @@ public class ComentarioRepository extends GenericRepository {
     public List<Map<String, Object>> buscarComentariosPorPublicacao(long idPublicacao) throws SQLException, IOException {
         List<Map<String, Object>> comentariosHierarquicos = new ArrayList<>();
         Map<Long, Map<String, Object>> comentarioMap = new HashMap<>();
+        Connection connection = null;
+        PreparedStatement statement = null;
 
         try {
-            Connection connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
+            connection = DriverManager.getConnection(getURL(), getUSERNAME(), getPASSWORD());
 
             String query = "SELECT \n"
                     + "    ID_COMENTARIO,\n"
@@ -42,7 +44,7 @@ public class ComentarioRepository extends GenericRepository {
                     + "    id_publicacao = ?"
                     + "    order by id_comentario desc";
 
-            PreparedStatement statement = connection.prepareStatement(query);
+            statement = connection.prepareStatement(query);
             statement.setLong(1, idPublicacao);
 
             ResultSet resultSet = statement.executeQuery();
@@ -83,13 +85,20 @@ public class ComentarioRepository extends GenericRepository {
         } catch (SQLException e) {
             e.printStackTrace();
             throw e;
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
 
         Collections.sort(comentariosHierarquicos, (comentario1, comentario2) -> {
-    Long id1 = (Long) comentario1.get("idComentario");
-    Long id2 = (Long) comentario2.get("idComentario");
-    return id2.compareTo(id1); // Ordernar em ordem decrescente
-});
+            Long id1 = (Long) comentario1.get("idComentario");
+            Long id2 = (Long) comentario2.get("idComentario");
+            return id2.compareTo(id1); // Ordernar em ordem decrescente
+        });
 
         return comentariosHierarquicos;
     }
