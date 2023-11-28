@@ -48,5 +48,4 @@ public class PessoaCategoria {
         this.dataCriacao = dataCriacao;
     }
 
-    // Outros campos, getters e setters
 }

@@ -30,7 +30,7 @@ public class BlobUtils {
 
     public java.sql.Blob stringToBlob(String data, Connection connection) throws Exception {
         if (data == null) {
-            return null; // ou lançar uma exceção, dependendo de suas necessidades
+            return null;
         }
 
         byte[] bytes = data.getBytes(StandardCharsets.UTF_8);

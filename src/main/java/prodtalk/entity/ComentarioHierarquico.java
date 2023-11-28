@@ -38,16 +38,14 @@ public class ComentarioHierarquico {
         this.qtdComentarios = qtdComentarios;
     }
 
-    // Método para adicionar uma resposta a este comentário
     public void adicionarResposta(ComentarioHierarquico resposta) {
         respostas.add(resposta);
     }
 
-    // Método para calcular a contagem de comentários desta hierarquia
     public void calcularContagem() {
         qtdComentarios = respostas.size();
         for (ComentarioHierarquico resposta : respostas) {
-            resposta.calcularContagem(); // Recursivamente calcular a contagem das respostas
+            resposta.calcularContagem(); 
             qtdComentarios += resposta.getQtdComentarios();
         }
     }

@@ -67,7 +67,6 @@ public class ComentarioRepository extends GenericRepository {
                 comentarioMap.put(comentarioId, comentario);
             }
 
-            // Construir a estrutura hierárquica
             for (Map<String, Object> comentario : comentarioMap.values()) {
                 Long respostaId = (Long) comentario.get("idComentarioResposta");
                 if (respostaId != null && respostaId != 0) {
@@ -77,7 +76,6 @@ public class ComentarioRepository extends GenericRepository {
                         respostas.add(comentario);
                     }
                 } else {
-                    // É um comentário principal, adicione-o à lista de comentários hierárquicos
                     comentariosHierarquicos.add(comentario);
                 }
             }
@@ -118,7 +116,7 @@ public class ComentarioRepository extends GenericRepository {
             statement.setLong(1, comentario.getPessoa().getIdPessoa());
             statement.setLong(2, comentario.getIdPublicacao());
             if (comentarioIdResposta == null) {
-                statement.setNull(3, java.sql.Types.BIGINT); // Define o campo como nulo
+                statement.setNull(3, java.sql.Types.BIGINT);
             } else {
                 statement.setLong(3, comentarioIdResposta);
             }
