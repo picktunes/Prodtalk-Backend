@@ -23,7 +23,6 @@ public class InteresseRepository extends GenericRepository {
             String query = "SELECT * FROM (SELECT a.*, ROWNUM rnum FROM (SELECT * FROM interesse) a WHERE ROWNUM <= ?)";
             PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, pageSize);
-            //statement.setInt(2, offset);
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {

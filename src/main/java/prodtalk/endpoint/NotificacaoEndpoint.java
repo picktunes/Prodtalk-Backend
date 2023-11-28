@@ -24,7 +24,7 @@ public class NotificacaoEndpoint {
             List<Notificacao> notificacoes = notificacaoRepository.buscarNotificacoesPorIdPessoa(idPessoa);
             return ResponseEntity.ok(notificacoes);
         } catch (SQLException e) {
-            List<Notificacao> emptyList = new ArrayList<>(); // Crie uma lista vazia ou trate de outra forma
+            List<Notificacao> emptyList = new ArrayList<>(); 
             return ResponseEntity.badRequest().body(emptyList);
         }
     }

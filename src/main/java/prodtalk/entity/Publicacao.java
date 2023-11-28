@@ -8,14 +8,14 @@ public class Publicacao {
 
     private long idPublicacao;
     private Pessoa pessoa;
-    private List<PublicacaoCurtida> publicacaoCurtida;
     private int idPessoa;
     private Date dataCriacao;
     private Date dataAtualizacao;
     private String conteudo;
     private String titulo;
-    private String img;
+    private String img; 
     private List<Map<String, Object>> comentarios; 
+   private List<PublicacaoCurtida> publicacaoCurtida;
     private Categoria categoria;
     private boolean publicacaoSalva;
 

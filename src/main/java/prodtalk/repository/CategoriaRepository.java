@@ -136,10 +136,10 @@ public class CategoriaRepository extends GenericRepository {
             return Response.ok("Categoria cadastrada com sucesso!");
         } catch (SQLException e) {
             e.printStackTrace();
-            return Response.invalid("Erro ao inserir categoria: " + e.getMessage()); // Ajuste a mensagem de erro conforme necessário
+            return Response.invalid("Erro ao inserir categoria: " + e.getMessage()); 
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.invalid("Erro ao inserir categoria: " + e.getMessage()); // Ajuste a mensagem de erro conforme necessário
+            return Response.invalid("Erro ao inserir categoria: " + e.getMessage()); 
         } finally {
             if (statement != null) {
                 statement.close();
@@ -161,7 +161,6 @@ public class CategoriaRepository extends GenericRepository {
             statement = connection.prepareStatement(sql);
             statement.setString(1, categoria.getDsNome());
             statement.setString(2, categoria.getDsDescricao());
-            // Defina os parâmetros do Blob (IMG e IMG_CAPA) conforme necessário
             statement.setTimestamp(5, categoria.getDtAtualizacao());
             statement.setString(6, categoria.getIeStatus());
             statement.setLong(7, categoria.getIdCategoriaPai());

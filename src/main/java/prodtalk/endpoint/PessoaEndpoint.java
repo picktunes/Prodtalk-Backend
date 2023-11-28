@@ -25,6 +25,15 @@ public class PessoaEndpoint {
             return Response.invalid("Erro ao buscar a pessoa. " + e.getMessage());
         }
     }
+    
+    @GetMapping("/pessoaId")
+    public ResponseEntity<Response> getPessoaPorId(@RequestParam("idPessoa") long idPessoa) throws IOException {
+        try {
+            return Response.ok(pessoaRepository.getPessoaPorId(idPessoa));
+        } catch (SQLException e) {
+            return Response.invalid("Erro ao buscar a pessoa. " + e.getMessage());
+        }
+    }
 
     @PostMapping("/pessoa")
     public ResponseEntity<Response> cadastrarPessoa(@RequestBody Pessoa pessoa) {
