@@ -7,11 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -116,6 +114,18 @@ public class PublicacaoEndpoint {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Erro ao atualizar a publicação. " + e.getMessage());
         }
+    }
+    
+    @GetMapping("/buscar-publicacoes")
+    public List<Publicacao> buscarPublicacoesPorTexto(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam String texto) throws Exception {
+        int pageSize = 10;
+        int offset = page * 10;
+
+        List<Publicacao> publicacoes = publicacaoRepository.buscarPublicacoesPorTexto(texto, offset, pageSize);
+
+        return publicacoes;
     }
 
 }

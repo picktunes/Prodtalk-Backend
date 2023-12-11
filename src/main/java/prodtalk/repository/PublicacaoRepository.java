@@ -276,12 +276,12 @@ public class PublicacaoRepository extends GenericRepository {
 
             String query = "SELECT * FROM ("
                     + "SELECT a.*, ROWNUM rnum FROM ("
-                    + "SELECT * FROM publicacao WHERE CONTAINS(CONTEUDO, ?, 1) > 0 OR CONTEUDO LIKE ? ORDER BY id_publicacao DESC"
+                    + "SELECT * FROM publicacao WHERE CONTAINS(CONTEUDO, ?, 1) > 0 OR CONTAINS(DS_TITULO, ?, 2) > 0 ORDER BY id_publicacao DESC"
                     + ") a WHERE ROWNUM <= ?"
                     + ") WHERE rnum >= ?";
 
             statement = connection.prepareStatement(query);
-            statement.setString(1, "%" + texto.toUpperCase() + "%"); 
+            statement.setString(1, "%" + texto.toUpperCase() + "%");
             statement.setString(2, "%" + texto.toUpperCase() + "%");
             statement.setInt(3, offset);
             statement.setInt(4, upperLimit);

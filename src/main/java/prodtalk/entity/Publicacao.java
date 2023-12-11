@@ -15,7 +15,7 @@ public class Publicacao {
     private String titulo;
     private String img; 
     private List<Map<String, Object>> comentarios; 
-   private List<PublicacaoCurtida> publicacaoCurtida;
+    private List<PublicacaoCurtida> publicacaoCurtida;
     private Categoria categoria;
     private boolean publicacaoSalva;
 
